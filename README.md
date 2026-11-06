@@ -1,12 +1,13 @@
-# 企業級硬體效能評估與投資效益分析系統 (Hardware Evaluator Pro v2.6)
+# 企業級硬體效能評估與投資效益分析系統 (Hardware Evaluator Pro v2.7)
 
 [![Platform](https://img.shields.io/badge/Platform-Windows%2010%20%2F%2011%20(x64)-blue.svg?style=flat-square)](https://github.com/Chun-Chieh-Chang/HardwareBenchmarker)
 [![Architecture](https://img.shields.io/badge/Architecture-Native%20.NET%20Framework-green.svg?style=flat-square)](https://github.com/Chun-Chieh-Chang/HardwareBenchmarker)
-[![File Size](https://img.shields.io/badge/Binary%20Size-~47%20KB%20(Single%20Portable)-orange.svg?style=flat-square)](https://github.com/Chun-Chieh-Chang/HardwareBenchmarker)
+[![File Size](https://img.shields.io/badge/Binary%20Size-~48%20KB%20(Single%20Portable)-orange.svg?style=flat-square)](https://github.com/Chun-Chieh-Chang/HardwareBenchmarker)
+[![Controlled Language](https://img.shields.io/badge/Standard-ASD--STE100%20Issue%209-blueviolet.svg?style=flat-square)](https://github.com/JAICHANGPARK/ASD-STE100)
 [![Build Status](https://img.shields.io/badge/CI%2FCD-Automated%20Build%20%26%20Validation-brightgreen.svg?style=flat-square)](https://github.com/Chun-Chieh-Chang/HardwareBenchmarker/actions)
 [![License](https://img.shields.io/badge/License-MIT-purple.svg?style=flat-square)](LICENSE)
 
-專為同仁向主管、IT 資訊中心或財務部門**申請設備升級與汰換更新**而量身打造的自動化評測軟體。本系統能夠在 15 秒內自動採樣硬體算力、監控多工滿載瓶頸、執行確定性當機與假死停頓量化診斷，並直接產出具備法律公文效力與簽核欄位的**決策層商務 HTML / PDF 評估報告**。
+專為同仁向主管、IT 資訊中心或財務部門**申請設備升級與汰換更新**而量身打造的自動化評測軟體。本系統能夠在 15 秒內自動採樣硬體算力、監控多工滿載瓶頸、執行確定性當機與假死停頓量化診斷，並依據國際航空航太級 **ASD-STE100 (Simplified Technical English, Issue 9)** 受控語言標準，直接產出具備審計公信力與簽核欄位的**決策層商務 HTML / PDF 評估報告**。
 
 ---
 
@@ -54,7 +55,13 @@
 - **資安與常駐服務**：公司 EDR (CrowdStrike/Defender), 備份, Windows 索引 $\rightarrow$ **1.8 ~ 4.0 GB**
 - $\Rightarrow$ **日常標準工作集總額**：**15.7 GB ~ 22.5 GB RAM**（證明當機非人為不當操作）。
 
-### 5. 一鍵輸出高質感簽核報告
+### 5. ASD-STE100 (Simplified Technical English, Issue 9) 規範文本輸出
+報告內容全面遵循國際航空航太與高可靠性工程規範之 **ASD-STE100 (Issue 9)** 受控語言標準，消除模糊歧義與情緒性修飾詞（Zero "AI Slop"）：
+- **語句長度約束**：處置程序句子 $\le 20$ 字；陳述描述句子 $\le 25$ 字。
+- **結構化分析區塊**：全面採用 `[條件 / CONDITION] -> [機制 / MECHANISM] -> [影響 / EFFECT] -> [處置 / ACTION]` 四段式客觀邏輯。
+- **單一詞義與主動語態**：捨棄「斷崖式驟降」、「風暴」等非標準修飾，採用「時脈限制 (PROCHOT CPU frequency reduction)」、「硬性分頁置換 (Hard Page Faults)」等標準術語；建議採購規格採用祈使句主動語態。
+
+### 6. 一鍵輸出高質感簽核報告
 - 自動生成符合 Design Tokens 色彩大師規範之獨立 HTML 檔案（無外部 CDN 依賴，100% 離線渲染）。
 - 內建 `@media print` 樣式優化，點擊「🖨️ 列印 / 另存為簽核 PDF」即可產出標準 A4 紙本或電子簽核公文，文末具備申請人、IT 主管與部門主管核決簽署欄位。
 

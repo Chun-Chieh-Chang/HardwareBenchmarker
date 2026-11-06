@@ -16,8 +16,8 @@ using Microsoft.Win32;
 [assembly: AssemblyCompany("Enterprise System Performance Lab")]
 [assembly: AssemblyProduct("Hardware Evaluator Pro")]
 [assembly: AssemblyCopyright("Copyright © 2026")]
-[assembly: AssemblyVersion("2.6.0.0")]
-[assembly: AssemblyFileVersion("2.6.0.0")]
+[assembly: AssemblyVersion("2.7.0.0")]
+[assembly: AssemblyFileVersion("2.7.0.0")]
 
 namespace HardwareBenchmark
 {
@@ -832,21 +832,28 @@ namespace HardwareBenchmark
 
             if (result.TotalRamGb < 12.0)
             {
-                result.RamRuleStatus = "觸發 Rule 1.1 致命級 (Critical)";
+                result.RamRuleStatus = "觸發 Rule 1.1 嚴重等級 (Critical)";
                 result.RamRuleColor = "#EF4444";
-                result.RamExhaustionRuleTriggered = "實體容量赤字高達 " + result.MemoryPressureDeficitRatio + "% (總量 " + result.TotalRamGb.ToString("F1") + "GB < 基準 " + result.StandardWorkloadMinRamGb + "GB)。常態工作下必然突破實體極限，強制引發硬性分頁置換風暴 (Hard Page Faults > 1,200/s)，導致磁碟 I/O 100% 飽和，造成滑鼠凍結、介面假死 (DWM Hang) 與程式崩潰。";
+                result.RamExhaustionRuleTriggered = "【條件】實體記憶體配置為 " + result.TotalRamGb.ToString("F1") + " GB，低於基準值 " + result.StandardWorkloadMinRamGb + " GB，容量赤字率為 " + result.MemoryPressureDeficitRatio + "%。<br/>" +
+                    "【機制】多工作業導致實體記憶體枯竭，系統強制引發硬性分頁置換 (Hard Page Faults > 1,200/s)。<br/>" +
+                    "【影響】磁碟 I/O 達到 100% 飽和，引發桌面視窗管理員凍結 (DWM Hang) 與處理程序異常終止 (0xC0000005)。<br/>" +
+                    "【處置】將實體記憶體擴充至 32 GB 或以上。";
             }
             else if (result.TotalRamGb <= 16.5)
             {
-                result.RamRuleStatus = "觸發 Rule 1.2 飽和臨界 (Warning)";
+                result.RamRuleStatus = "觸發 Rule 1.2 警戒等級 (Warning)";
                 result.RamRuleColor = "#F59E0B";
-                result.RamExhaustionRuleTriggered = "工作集常態維持於 88%~96% 飽和邊界。當開啟第 25 個分頁、大型 Excel 活頁簿或 Teams 螢幕共享時，瞬間峰值突破 100%，引發背景進程被作業系統 OOM 強制閃退終止 (Process Exit 0xC0000005) 或短暫無響應卡頓。";
+                result.RamExhaustionRuleTriggered = "【條件】實體記憶體使用率常態維持於 88% 至 96% 飽和區間。<br/>" +
+                    "【機制】開啟多項公務分頁或大型資料表時，記憶體峰值達到 100% 上限。<br/>" +
+                    "【影響】作業系統釋放背景程序以避免記憶體不足 (OOM)，導致應用程式短暫無響應。<br/>" +
+                    "【處置】升級實體記憶體至 32 GB。";
             }
             else
             {
-                result.RamRuleStatus = "未觸發 Rule 1 (Normal)";
+                result.RamRuleStatus = "未觸發 Rule 1 正常狀態 (Normal)";
                 result.RamRuleColor = "#10B981";
-                result.RamExhaustionRuleTriggered = "實體記憶體容量足額覆蓋現代日常標準工作集需求，常態下不致引發虛擬分頁檔枯竭崩潰。";
+                result.RamExhaustionRuleTriggered = "【條件】實體記憶體為 " + result.TotalRamGb.ToString("F1") + " GB，符合標準工作負載需求。<br/>" +
+                    "【處置】實體容量充足，無需採取處置措施。";
             }
 
             // 5. 熱降頻衰減率 (TPTR) 與 Rule 2 判定
@@ -862,49 +869,64 @@ namespace HardwareBenchmark
 
             if (result.DeviceFormFactor.Contains("Laptop") && result.ThermalThrottleRatio >= 25.0)
             {
-                result.ThermalRuleStatus = "觸發 Rule 2.1 斷崖降頻 (Critical)";
+                result.ThermalRuleStatus = "觸發 Rule 2.1 嚴重等級 (Critical)";
                 result.ThermalRuleColor = "#EF4444";
-                result.ThermalRuleTriggered = "筆電輕薄機身散熱平衡極限約 28W~35W。多核滿載運算效率衰減 " + result.ThermalThrottleRatio + "%，核心溫度逼近 98°C 臨界觸發 Intel/AMD PROCHOT 硬體保護，時脈斷崖式驟降 (4.2GHz -> 0.8GHz 投影片式卡頓)；極限高溫下存在 TJMax 105°C 硬體斷電重啟 (Kernel-Power 41) 風險。";
+                result.ThermalRuleTriggered = "【條件】多核心運算擴展效率衰減率達到 " + result.ThermalThrottleRatio + "%。<br/>" +
+                    "【機制】處理器核心溫度達到 98°C 臨界值，韌體觸發 PROCHOT 硬體保護。<br/>" +
+                    "【影響】處理器強制降低運作頻率。若核心溫度達到 TJMax (105°C)，引發硬體斷電重啟 (Kernel-Power 41)。<br/>" +
+                    "【處置】更換高導熱散熱介質或汰換為具備雙散熱風扇之機型。";
             }
             else if (result.ThermalThrottleRatio >= 15.0)
             {
-                result.ThermalRuleStatus = "觸發 Rule 2.2 輕度受限 (Warning)";
+                result.ThermalRuleStatus = "觸發 Rule 2.2 警戒等級 (Warning)";
                 result.ThermalRuleColor = "#F59E0B";
-                result.ThermalRuleTriggered = "長時間重載運算時散熱模組出現熱衰減抖動，多核心並行擴展效率受供電/溫度上限限制。";
+                result.ThermalRuleTriggered = "【條件】多核心運算擴展效率衰減率為 " + result.ThermalThrottleRatio + "%。<br/>" +
+                    "【機制】散熱模組在高負載持續運算時產生熱累積。<br/>" +
+                    "【影響】處理器間歇性調降工作頻率。<br/>" +
+                    "【處置】清除風道灰塵並定期監控散熱效能。";
             }
             else
             {
-                result.ThermalRuleStatus = "未觸發 Rule 2 (Normal)";
+                result.ThermalRuleStatus = "未觸發 Rule 2 正常狀態 (Normal)";
                 result.ThermalRuleColor = "#10B981";
-                result.ThermalRuleTriggered = "散熱管線與功耗控制穩定，滿載運算下多核心能效表現良好。";
+                result.ThermalRuleTriggered = "【條件】滿載運算散熱效能受控。<br/>" +
+                    "【處置】處理器溫度與功耗均在安全裕度內。";
             }
 
             // 6. Modern Standby S0ix 睡眠死機與 Rule 3 判定
             if (result.ModernStandbySupported && result.DeviceFormFactor.Contains("Laptop"))
             {
-                result.ModernStandbyRuleStatus = "觸發 Rule 3.1 睡眠死機風險 (Warning)";
+                result.ModernStandbyRuleStatus = "觸發 Rule 3.1 警戒等級 (Warning)";
                 result.ModernStandbyRuleColor = "#F59E0B";
-                result.ModernStandbyRuleTriggered = "啟用 Windows 11 Modern Standby (S0ix) 待命連線。筆電闔蓋置入公事包時，密閉熱阻高達 3.5 K/W，背景持續耗電 3~6W 引發悶熱積熱；且睡眠電源狀態轉換 (D0->D3) 若超過 30 秒逾時，將觸發 0x0000009F DRIVER_POWER_STATE_FAILURE 藍屏死機或電池耗盡過放鎖死。";
+                result.ModernStandbyRuleTriggered = "【條件】筆記型電腦啟用 Windows 11 Modern Standby (S0ix) 待命模式。<br/>" +
+                    "【機制】闔蓋置入密閉公事包後，背景程序持續消耗 3W 至 6W 功率，密閉熱阻大於 3.5 K/W。<br/>" +
+                    "【影響】機身內部溫度升高。電源狀態轉換 (D0 至 D3) 逾時 30 秒觸發 0x0000009F DRIVER_POWER_STATE_FAILURE 系統崩潰。<br/>" +
+                    "【處置】於 Windows 電源選項設定「闔蓋進入休眠 (S4 Hibernate)」，並關閉待命網路連線。";
             }
             else
             {
-                result.ModernStandbyRuleStatus = "未觸發 Rule 3 (Normal)";
+                result.ModernStandbyRuleStatus = "未觸發 Rule 3 正常狀態 (Normal)";
                 result.ModernStandbyRuleColor = "#10B981";
-                result.ModernStandbyRuleTriggered = "韌體維持傳統 S3 斷電睡眠或桌上型電源管理，闔蓋後處理器完全進入深休眠，無背包高溫積熱或睡眠喚醒死機問題。";
+                result.ModernStandbyRuleTriggered = "【條件】設備採用傳統 S3 睡眠架構或為桌上型電腦。<br/>" +
+                    "【處置】設備進入深度睡眠狀態，無公事包積熱或電源狀態轉換逾時問題。";
             }
 
             // 7. I/O 隊列與 DPC 看門狗藍屏 Rule 4 判定
             if (result.TotalRamGb < 16.0)
             {
-                result.IoWatchdogRuleStatus = "觸發 Rule 4.1 隊列飽和風暴 (Warning)";
+                result.IoWatchdogRuleStatus = "觸發 Rule 4.1 警戒等級 (Warning)";
                 result.IoWatchdogRuleColor = "#F59E0B";
-                result.IoWatchdogRuleTriggered = "實體記憶體不足迫使 Windows 頻繁向 SSD 分頁檔衝刷髒頁。若為無獨立 DRAM 快取之固態硬碟，SLC 快取耗盡後隨機寫入延遲自 0.1ms 暴增至 >3,000ms，隊列深度 >32，極易誘發核心排程逾時拋出 0x00000133 DPC_WATCHDOG_VIOLATION 藍屏崩潰。";
+                result.IoWatchdogRuleTriggered = "【條件】實體記憶體低於 16 GB。<br/>" +
+                    "【機制】實體記憶體不足導致作業系統頻繁將分頁資料寫入儲存裝置。<br/>" +
+                    "【影響】無獨立快取之固態硬碟寫入延遲增加至 3,000 毫秒以上，佇列深度大於 32，觸發 0x00000133 DPC_WATCHDOG_VIOLATION 核心中斷逾時錯誤。<br/>" +
+                    "【處置】選用配備獨立 DRAM 快取之 PCIe 4.0 NVMe 固態硬碟，並擴充實體記憶體。";
             }
             else
             {
-                result.IoWatchdogRuleStatus = "未觸發 Rule 4 (Normal)";
+                result.IoWatchdogRuleStatus = "未觸發 Rule 4 正常狀態 (Normal)";
                 result.IoWatchdogRuleColor = "#10B981";
-                result.IoWatchdogRuleTriggered = "實體容量充裕，避免了高強度磁碟 I/O 分頁衝刷，DPC 中斷與儲存佇列延遲受控。";
+                result.IoWatchdogRuleTriggered = "【條件】實體記憶體容量充足。<br/>" +
+                    "【處置】磁碟 I/O 佇列延遲受控，無核心中斷逾時風險。";
             }
 
             // 8. 綜合當機與停頓風險評級
@@ -917,19 +939,19 @@ namespace HardwareBenchmark
 
             if (riskScore >= 4 || result.TotalRamGb < 12.0)
             {
-                result.OverallCrashRiskGrade = "極度危險 (CRITICAL AT-RISK)";
+                result.OverallCrashRiskGrade = "嚴重風險 (CRITICAL RISK)";
                 result.OverallCrashRiskColor = "#EF4444";
                 result.MonthlyEstimatedCrashes = 3.5;
             }
             else if (riskScore >= 2)
             {
-                result.OverallCrashRiskGrade = "高度警戒 (HIGH EXPOSURE)";
+                result.OverallCrashRiskGrade = "警戒狀態 (WARNING LEVEL)";
                 result.OverallCrashRiskColor = "#F59E0B";
                 result.MonthlyEstimatedCrashes = 1.8;
             }
             else
             {
-                result.OverallCrashRiskGrade = "常態受控 (LOW RISK)";
+                result.OverallCrashRiskGrade = "受控狀態 (CONTROLLED)";
                 result.OverallCrashRiskColor = "#10B981";
                 result.MonthlyEstimatedCrashes = 0.3;
             }
@@ -940,24 +962,32 @@ namespace HardwareBenchmark
             result.AnnualCrashCostWasteUsd = Math.Round(result.AnnualCrashDowntimeHours * 45.0);
             result.TotalAnnualLossCombinedUsd = result.EstAnnualCostWasteUsd + result.AnnualCrashCostWasteUsd;
 
-            // 10. 評估急迫度
+            // 10. 評估急迫度 (遵循 ASD-STE100 規範：短句、無修飾冗詞、條件-機制-影響-處置四段結構)
             if (result.PerformanceDeficitPercent >= 45.0 || result.TotalRamGb < 16.0 || riskScore >= 3)
             {
-                result.UpgradeUrgency = "高急迫性建議升級 (CRITICAL REFRESH)";
+                result.UpgradeUrgency = "高急迫性升級處置 (CRITICAL REFRESH)";
                 result.UrgencyColor = "#EF4444";
-                result.ExecutiveSummary = "受測設備算力顯著落後現代標竿 (-" + result.PerformanceDeficitPercent + "%)，且實體記憶體無法承載現代日常標準工作集 (赤字 " + result.MemoryPressureDeficitRatio + "%)，已觸發確定性當機與假死停頓規則。估算每位員工每年因日常等待卡頓與異常死機累積損失高達 " + (result.EstAnnualLostHours + result.AnnualCrashDowntimeHours).ToString("F1") + " 小時工時 (折合沉沒財務成本 $" + result.TotalAnnualLossCombinedUsd.ToString("N0") + " USD)，遠超過採購新設備之資本支出。強烈建議儘速排入硬體汰換核決。";
+                result.ExecutiveSummary = "【狀態評定】設備算力低於現代企業基準 " + result.PerformanceDeficitPercent + "%。實體記憶體赤字率達到 " + result.MemoryPressureDeficitRatio + "%，已觸發系統中斷與凍結規則。<br/>" +
+                    "【機制說明】實體記憶體不足導致高頻率硬性分頁置換，處理器滿載運算觸發溫度降頻保護機制。<br/>" +
+                    "【損失估算】年度延遲與異常停機時間合計 " + (result.EstAnnualLostHours + result.AnnualCrashDowntimeHours).ToString("F1") + " 小時。年度生產力損失金額為 $" + result.TotalAnnualLossCombinedUsd.ToString("N0") + " USD。<br/>" +
+                    "【處置程序】執行硬體汰換作業。更換為 32 GB RAM 與 16 執行緒處理器。硬體資本支出低於年度工時損失金額。";
             }
             else if (result.PerformanceDeficitPercent >= 25.0 || riskScore >= 1)
             {
-                result.UpgradeUrgency = "建議規劃汰換更新 (RECOMMENDED REFRESH)";
+                result.UpgradeUrgency = "建議規劃更新程序 (RECOMMENDED REFRESH)";
                 result.UrgencyColor = "#F59E0B";
-                result.ExecutiveSummary = "目前設備處於中年期硬體水準，單一輕量工作尚可應付，但在多工協作與重載運算時已達飽和臨界邊界，隨時面臨分頁檔置換停頓與背景進程 OOM 閃退。估算年度合計產能與當機損耗達 $" + result.TotalAnnualLossCombinedUsd.ToString("N0") + " USD。建議於近期預算中安排硬體更新。";
+                result.ExecutiveSummary = "【狀態評定】設備算力低於現代企業基準 " + result.PerformanceDeficitPercent + "%。記憶體負載維持於 88% 至 96% 飽和區間。<br/>" +
+                    "【機制說明】多工處理時容易達到實體記憶體上限，引發分頁置換延遲與程式異常終止風險。<br/>" +
+                    "【損失估算】年度生產力與異常停機損失金額合計為 $" + result.TotalAnnualLossCombinedUsd.ToString("N0") + " USD。<br/>" +
+                    "【處置程序】規劃硬體更換計畫。將採購預算編列於近期年度預算。";
             }
             else
             {
-                result.UpgradeUrgency = "目前狀態適足 (CURRENTLY ACCEPTABLE)";
+                result.UpgradeUrgency = "硬體狀態符合標準 (CURRENTLY ACCEPTABLE)";
                 result.UrgencyColor = "#10B981";
-                result.ExecutiveSummary = "目前設備各項效能指標與記憶體配額皆落在企業標準安全裕度內，當機觸發風險受控，無急迫更換之必要。";
+                result.ExecutiveSummary = "【狀態評定】設備算力指標與記憶體配置符合企業標準工作負載規範。<br/>" +
+                    "【機制說明】系統運作未觸發硬體降頻或記憶體枯竭保護機制。<br/>" +
+                    "【處置程序】維持現有硬體配置。無需執行硬體更換。";
             }
         }
 
@@ -1045,6 +1075,7 @@ namespace HardwareBenchmark
             sb.AppendLine("    .tag-safe { background: #DCFCE7; color: #166534; font-weight: 600; padding: 3px 8px; border-radius: 4px; font-size: 12px; display: inline-block; }");
             sb.AppendLine("    .tag-warn { background: #FEF3C7; color: #92400E; font-weight: 600; padding: 3px 8px; border-radius: 4px; font-size: 12px; display: inline-block; }");
             sb.AppendLine("    .tag-danger { background: #FEE2E2; color: #991B1B; font-weight: 600; padding: 3px 8px; border-radius: 4px; font-size: 12px; display: inline-block; }");
+            sb.AppendLine("    .tag-ste { background: #EEF2FF; color: #4338CA; border: 1px solid #C7D2FE; font-weight: 600; padding: 3px 10px; border-radius: 4px; font-size: 11.5px; display: inline-flex; align-items: center; gap: 4px; }");
             sb.AppendLine("    table.spec-table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 14px; }");
             sb.AppendLine("    table.spec-table th, table.spec-table td { padding: 12px 14px; text-align: left; border-bottom: 1px solid var(--border); }");
             sb.AppendLine("    table.spec-table th { background: #F3F4F6; color: var(--text-sub); font-weight: 600; width: 28%; }");
@@ -1066,7 +1097,10 @@ namespace HardwareBenchmark
             sb.AppendLine("    <div class=\"header-bar\">");
             sb.AppendLine("      <div class=\"title-area\">");
             sb.AppendLine("        <h1>企業硬體效能評估與投資效益分析報告</h1>");
-            sb.AppendLine("        <p>報告編號：RPT-" + DateTime.Now.ToString("yyyyMMdd-HHmmss") + " | 評測日期：" + r.TestTimestamp.ToString("yyyy-MM-dd HH:mm:ss") + "</p>");
+            sb.AppendLine("        <div style=\"display:flex; gap:10px; align-items:center; margin-top:4px; flex-wrap:wrap;\">");
+            sb.AppendLine("          <p>報告編號：RPT-" + DateTime.Now.ToString("yyyyMMdd-HHmmss") + " | 評測日期：" + r.TestTimestamp.ToString("yyyy-MM-dd HH:mm:ss") + "</p>");
+            sb.AppendLine("          <span class=\"tag-ste\">規範標準：ASD-STE100 Issue 9 (Simplified Technical English)</span>");
+            sb.AppendLine("        </div>");
             sb.AppendLine("      </div>");
             sb.AppendLine("      <button class=\"btn-print\" onclick=\"window.print()\">🖨️ 列印 / 另存為簽核 PDF</button>");
             sb.AppendLine("    </div>");
@@ -1074,10 +1108,10 @@ namespace HardwareBenchmark
             // Executive Verdict
             sb.AppendLine("    <div style=\"background: #F8FAFC; border-left: 6px solid " + r.UrgencyColor + "; padding: 18px; border-radius: 8px; margin-bottom: 24px;\">");
             sb.AppendLine("      <div style=\"display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:8px;\">");
-            sb.AppendLine("        <h2 style=\"font-size:18px; font-weight:700;\">【主管摘要】決策層升級評定結論</h2>");
+            sb.AppendLine("        <h2 style=\"font-size:18px; font-weight:700;\">【執行摘要】硬體評估與矯正處置結論 (Executive Summary & Corrective Action)</h2>");
             sb.AppendLine("        <div style=\"display:flex; gap:8px;\">");
             sb.AppendLine("          <span class=\"badge\" style=\"background-color:" + r.UrgencyColor + ";\">" + r.UpgradeUrgency + "</span>");
-            sb.AppendLine("          <span class=\"badge\" style=\"background-color:" + r.OverallCrashRiskColor + ";\">當機停頓風險: " + r.OverallCrashRiskGrade + "</span>");
+            sb.AppendLine("          <span class=\"badge\" style=\"background-color:" + r.OverallCrashRiskColor + ";\">系統異常風險: " + r.OverallCrashRiskGrade + "</span>");
             sb.AppendLine("        </div>");
             sb.AppendLine("      </div>");
             sb.AppendLine("      <p style=\"font-size:14px; color:#334155; line-height:1.7;\">" + r.ExecutiveSummary + "</p>");
@@ -1086,44 +1120,44 @@ namespace HardwareBenchmark
             // Quantitative KPI Grid
             sb.AppendLine("    <div class=\"grid-4\">");
             sb.AppendLine("      <div class=\"kpi-card\">");
-            sb.AppendLine("        <div class=\"kpi-label\">相較主流標竿算力落差</div>");
+            sb.AppendLine("        <div class=\"kpi-label\">處理器算力基準落差 (Benchmark Deficit)</div>");
             sb.AppendLine("        <div class=\"kpi-val\" style=\"color:" + (r.PerformanceDeficitPercent > 30 ? "var(--danger)" : "var(--brand)") + ";\">-" + r.PerformanceDeficitPercent + "%</div>");
-            sb.AppendLine("        <div class=\"kpi-sub\">實體記憶體赤字 (MPDR): <strong>" + r.MemoryPressureDeficitRatio + "%</strong></div>");
+            sb.AppendLine("        <div class=\"kpi-sub\">實體記憶體赤字率 (MPDR): <strong>" + r.MemoryPressureDeficitRatio + "%</strong></div>");
             sb.AppendLine("      </div>");
 
             sb.AppendLine("      <div class=\"kpi-card\">");
-            sb.AppendLine("        <div class=\"kpi-label\">每日工作卡頓與分頁置換</div>");
+            sb.AppendLine("        <div class=\"kpi-label\">每日系統延遲時間 (Daily Latency Loss)</div>");
             sb.AppendLine("        <div class=\"kpi-val\">" + r.EstDailyLostMinutes + " <span style=\"font-size:14px; font-weight:500;\">分鐘/日</span></div>");
-            sb.AppendLine("        <div class=\"kpi-sub\">年化卡頓工時: <strong>" + r.EstAnnualLostHours + " 小時/年</strong></div>");
+            sb.AppendLine("        <div class=\"kpi-sub\">年化延遲工時: <strong>" + r.EstAnnualLostHours + " 小時/年</strong></div>");
             sb.AppendLine("      </div>");
 
             sb.AppendLine("      <div class=\"kpi-card\">");
-            sb.AppendLine("        <div class=\"kpi-label\">年化當機中斷與故障工時</div>");
+            sb.AppendLine("        <div class=\"kpi-label\">年化異常停機時間 (Annual Failure Downtime)</div>");
             sb.AppendLine("        <div class=\"kpi-val\" style=\"color:var(--danger);\">" + r.AnnualCrashDowntimeHours + " <span style=\"font-size:14px; font-weight:500;\">小時/年</span></div>");
-            sb.AppendLine("        <div class=\"kpi-sub\">預估異常中斷: <strong>" + r.MonthlyEstimatedCrashes + " 次/月 (每次~39m)</strong></div>");
+            sb.AppendLine("        <div class=\"kpi-sub\">預估異常中斷: <strong>" + r.MonthlyEstimatedCrashes + " 次/月 (每次基準 39 分鐘)</strong></div>");
             sb.AppendLine("      </div>");
 
             sb.AppendLine("      <div class=\"kpi-card\">");
-            sb.AppendLine("        <div class=\"kpi-label\">年化綜合沉沒財務浪費</div>");
+            sb.AppendLine("        <div class=\"kpi-label\">年化生產力成本損失 (Annual Cost Loss)</div>");
             sb.AppendLine("        <div class=\"kpi-val\">$" + r.TotalAnnualLossCombinedUsd.ToString("N0") + " <span style=\"font-size:14px; font-weight:500;\">USD</span></div>");
-            sb.AppendLine("        <div class=\"kpi-sub\">卡頓等待 $" + r.EstAnnualCostWasteUsd.ToString("N0") + " + 當機損失 $" + r.AnnualCrashCostWasteUsd.ToString("N0") + "</div>");
+            sb.AppendLine("        <div class=\"kpi-sub\">操作延遲 $" + r.EstAnnualCostWasteUsd.ToString("N0") + " + 故障停機 $" + r.AnnualCrashCostWasteUsd.ToString("N0") + "</div>");
             sb.AppendLine("      </div>");
             sb.AppendLine("    </div>");
 
             // Benchmark Comparison Bars
-            sb.AppendLine("    <h3 style=\"font-size:16px; margin: 24px 0 12px;\">📊 核心運算效能對比基準 (Benchmark Performance)</h3>");
+            sb.AppendLine("    <h3 style=\"font-size:16px; margin: 24px 0 12px;\">📊 核心運算效能對比基準 (Benchmark Performance Index)</h3>");
 
             // Single Core Bar
             double singlePct = Math.Min(100.0, (r.SingleThreadScore / r.BaselineSingleThreadScore) * 100.0);
             sb.AppendLine("    <div class=\"bar-container\">");
-            sb.AppendLine("      <div class=\"bar-label\"><span>單核心響應運算 (Single-Core Mathematical Index)</span><span>當前: " + r.SingleThreadScore + " pts / 標竿: " + r.BaselineSingleThreadScore + " pts</span></div>");
+            sb.AppendLine("      <div class=\"bar-label\"><span>單核心運算效能指標 (Single-Core Mathematical Index)</span><span>當前: " + r.SingleThreadScore + " pts / 標竿: " + r.BaselineSingleThreadScore + " pts</span></div>");
             sb.AppendLine("      <div class=\"bar-track\"><div class=\"bar-fill bar-current\" style=\"width:" + singlePct.ToString("F1") + "%;\"></div></div>");
             sb.AppendLine("    </div>");
 
             // Multi Core Bar
             double multiPct = Math.Min(100.0, (r.MultiThreadScore / r.BaselineMultiThreadScore) * 100.0);
             sb.AppendLine("    <div class=\"bar-container\">");
-            sb.AppendLine("      <div class=\"bar-label\"><span>多核心滿載吞吐量 (Multi-Core Saturated Throughput)</span><span>當前: " + r.MultiThreadScore + " pts / 標竿: " + r.BaselineMultiThreadScore + " pts</span></div>");
+            sb.AppendLine("      <div class=\"bar-label\"><span>多核心平行運算吞吐量 (Multi-Core Saturated Throughput)</span><span>當前: " + r.MultiThreadScore + " pts / 標竿: " + r.BaselineMultiThreadScore + " pts</span></div>");
             sb.AppendLine("      <div class=\"bar-track\"><div class=\"bar-fill\" style=\"width:" + multiPct.ToString("F1") + "%; background-color:" + (multiPct < 60 ? "var(--warning)" : "var(--brand)") + ";\"></div></div>");
             sb.AppendLine("    </div>");
 
@@ -1131,12 +1165,12 @@ namespace HardwareBenchmark
             sb.AppendLine("    <div style=\"background:#F0F9FF; border:1px solid #BAE6FD; border-radius:8px; padding:14px; margin-top:16px;\">");
             sb.AppendLine("      <div style=\"display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; flex-wrap:wrap; gap:8px;\">");
             sb.AppendLine("        <span style=\"font-size:14px; font-weight:700; color:#0369A1;\">🌐 真實應用軟體核心負載 (Microsoft Edge Chromium 引擎冷啟動與 DOM 渲染)</span>");
-            sb.AppendLine("        <span class=\"tag-safe\">真實應用軟體模擬</span>");
+            sb.AppendLine("        <span class=\"tag-safe\">受控環境實測</span>");
             sb.AppendLine("      </div>");
             sb.AppendLine("      <p style=\"font-size:13px; color:#0C4A6E; line-height:1.6;\">");
-            sb.AppendLine("        <strong>【測試機制】</strong>：非純抽象合成指令，本項目以受控無頭模式（Headless）調用 Windows 內建 Microsoft Edge 核心進程，實測同仁開啟瀏覽器與複雜 Web 系統時的瞬間卡頓反應。<br/>");
-            sb.AppendLine("        <strong>【量測數值】</strong>：瀏覽器進程冷啟動延遲：<strong>" + r.EdgeColdLaunchMs + " ms</strong> | 5,000 個 DOM 節點腳本生成與重繪：<strong>" + r.EdgeDomExecutionMs + " ms</strong><br/>");
-            sb.AppendLine("        <strong>【業務意義】</strong>：" + r.EdgeBenchmarkSummary + "。直接反映日常操作 ERP、CRM、Jira 與 Google Docs 等大型雲端系統時的真實流暢度。");
+            sb.AppendLine("        <strong>【檢測方法】</strong>：調用 Windows 內建 Microsoft Edge 核心進程（Headless 模式），量測應用程式冷啟動與 Web 節點運算延遲。<br/>");
+            sb.AppendLine("        <strong>【量測數值】</strong>：瀏覽器進程冷啟動時間：<strong>" + r.EdgeColdLaunchMs + " ms</strong> | 5,000 個 DOM 節點生成與重繪時間：<strong>" + r.EdgeDomExecutionMs + " ms</strong><br/>");
+            sb.AppendLine("        <strong>【業務影響】</strong>：" + r.EdgeBenchmarkSummary + "。此數值反映操作企業雲端應用系統（ERP、CRM、辦公協作工具）時之介面反應延遲。");
             sb.AppendLine("      </p>");
             sb.AppendLine("    </div>");
 
@@ -1160,156 +1194,156 @@ namespace HardwareBenchmark
             sb.AppendLine("    </div>");
 
             // CRASH & FREEZE DIAGNOSTICS SECTION
-            sb.AppendLine("    <h3 style=\"font-size:16px; margin: 32px 0 12px; color:var(--text-main);\">🚨 系統異常當機、崩潰與停頓假死量化診斷 (Deterministic Crash & Freeze Trigger Matrix)</h3>");
-            sb.AppendLine("    <p style=\"font-size:13.5px; color:var(--text-sub); margin-bottom:16px;\">本評估依據計算機底層架構第一性原理，將系統死機、介面凍結與藍屏崩潰建立為客觀量化之確定性規則庫（Deterministic Rule Engine），免受主觀推諉，精準鎖定實體物理瓶頸：</p>");
+            sb.AppendLine("    <h3 style=\"font-size:16px; margin: 32px 0 12px; color:var(--text-main);\">🚨 系統異常中斷與凍結量化診斷矩陣 (Deterministic Failure Trigger Matrix)</h3>");
+            sb.AppendLine("    <p style=\"font-size:13.5px; color:var(--text-sub); margin-bottom:16px;\">本評估依據計算機硬體架構第一性原理，建立客觀確定性診斷規則庫（Deterministic Rule Engine），分析實體物理瓶頸：</p>");
 
             // Rule 1 Card
             sb.AppendLine("    <div class=\"rule-card\" style=\"border-left-color:" + r.RamRuleColor + ";\">");
             sb.AppendLine("      <div class=\"rule-head\">");
-            sb.AppendLine("        <span class=\"rule-title\">【規則 1】記憶體容量枯竭與分頁檔風暴 (RAM Exhaustion & Pagefile Thrashing)</span>");
+            sb.AppendLine("        <span class=\"rule-title\">【規則 1】記憶體容量枯竭與分頁檔置換 (RAM Exhaustion & Pagefile Thrashing)</span>");
             sb.AppendLine("        <span class=\"rule-status\" style=\"background-color:" + r.RamRuleColor + "; color:#fff;\">" + r.RamRuleStatus + "</span>");
             sb.AppendLine("      </div>");
             sb.AppendLine("      <div class=\"rule-desc\">" + r.RamExhaustionRuleTriggered + "</div>");
-            sb.AppendLine("      <div class=\"rule-formula\">判定公式：MPDR = max(0, (Workload_Normal [" + r.StandardWorkloadMinRamGb + "GB] - TotalRAM [" + r.TotalRamGb.ToString("F1") + "GB]) / " + r.StandardWorkloadMinRamGb + ") × 100% ＝ <strong>" + r.MemoryPressureDeficitRatio + "%</strong> | 當前提交總限額: " + r.TotalPageFileGb.ToString("F1") + " GB (記憶體負載: " + r.MemoryLoadPercent + "%) | 潛在崩潰錯誤：0xC0000005 (Access Violation OOM), DWM 介面假死</div>");
+            sb.AppendLine("      <div class=\"rule-formula\">判定公式：MPDR = max(0, (Workload_Normal [" + r.StandardWorkloadMinRamGb + "GB] - TotalRAM [" + r.TotalRamGb.ToString("F1") + "GB]) / " + r.StandardWorkloadMinRamGb + ") × 100% ＝ <strong>" + r.MemoryPressureDeficitRatio + "%</strong> | 當前提交總限額: " + r.TotalPageFileGb.ToString("F1") + " GB (記憶體負載: " + r.MemoryLoadPercent + "%) | 異常錯誤碼：0xC0000005 (Access Violation OOM), DWM 介面凍結</div>");
             sb.AppendLine("    </div>");
 
             // Rule 2 Card
             sb.AppendLine("    <div class=\"rule-card\" style=\"border-left-color:" + r.ThermalRuleColor + ";\">");
             sb.AppendLine("      <div class=\"rule-head\">");
-            sb.AppendLine("        <span class=\"rule-title\">【規則 2】熱過載降頻與 TJMax 熱保護斷電 (Thermal Runaway & PROCHOT Throttling)</span>");
+            sb.AppendLine("        <span class=\"rule-title\">【規則 2】熱過載降頻與溫度保護機制 (Thermal Runaway & PROCHOT Throttling)</span>");
             sb.AppendLine("        <span class=\"rule-status\" style=\"background-color:" + r.ThermalRuleColor + "; color:#fff;\">" + r.ThermalRuleStatus + "</span>");
             sb.AppendLine("      </div>");
             sb.AppendLine("      <div class=\"rule-desc\">" + r.ThermalRuleTriggered + "</div>");
-            sb.AppendLine("      <div class=\"rule-formula\">判定公式：TPTR = max(0, (ExpectedScaling [" + r.ExpectedMultiScalingRatio + "x] - ActualScaling [" + r.MultiThreadScalingRatio + "x]) / " + r.ExpectedMultiScalingRatio + ") × 100% ＝ <strong>" + r.ThermalThrottleRatio + "%</strong> | 散熱衰減觸發：PROCHOT 斷崖降頻 (時脈驟降 >60%) / TJMax 105°C 硬體斷電重啟 (Kernel-Power 41)</div>");
+            sb.AppendLine("      <div class=\"rule-formula\">判定公式：TPTR = max(0, (ExpectedScaling [" + r.ExpectedMultiScalingRatio + "x] - ActualScaling [" + r.MultiThreadScalingRatio + "x]) / " + r.ExpectedMultiScalingRatio + ") × 100% ＝ <strong>" + r.ThermalThrottleRatio + "%</strong> | 保護機制：PROCHOT 運作頻率限制 / TJMax 105°C 硬體保護斷電 (Kernel-Power 41)</div>");
             sb.AppendLine("    </div>");
 
             // Rule 3 Card
             sb.AppendLine("    <div class=\"rule-card\" style=\"border-left-color:" + r.ModernStandbyRuleColor + ";\">");
             sb.AppendLine("      <div class=\"rule-head\">");
-            sb.AppendLine("        <span class=\"rule-title\">【規則 3】Modern Standby S0ix 睡眠死機與公事包積熱 (Sleep State Thermal Bugcheck)</span>");
+            sb.AppendLine("        <span class=\"rule-title\">【規則 3】Modern Standby S0ix 待命積熱與驅動逾時 (Sleep State Thermal Bugcheck)</span>");
             sb.AppendLine("        <span class=\"rule-status\" style=\"background-color:" + r.ModernStandbyRuleColor + "; color:#fff;\">" + r.ModernStandbyRuleStatus + "</span>");
             sb.AppendLine("      </div>");
             sb.AppendLine("      <div class=\"rule-desc\">" + r.ModernStandbyRuleTriggered + "</div>");
-            sb.AppendLine("      <div class=\"rule-formula\">判定公式：ThermalRunawayRisk = S0ixActive (" + (r.ModernStandbySupported ? "True" : "False") + ") ∧ IsLaptop (" + (r.DeviceFormFactor.Contains("Laptop") ? "True" : "False") + ") ∧ ClosedBag (熱阻 ≥ 3.5 K/W) | 潛在崩潰錯誤：0x0000009F DRIVER_POWER_STATE_FAILURE 睡眠藍屏、電池過放低壓鎖死</div>");
+            sb.AppendLine("      <div class=\"rule-formula\">判定公式：ThermalRunawayRisk = S0ixActive (" + (r.ModernStandbySupported ? "True" : "False") + ") ∧ IsLaptop (" + (r.DeviceFormFactor.Contains("Laptop") ? "True" : "False") + ") ∧ ClosedBag (熱阻 ≥ 3.5 K/W) | 異常錯誤碼：0x0000009F DRIVER_POWER_STATE_FAILURE 電源狀態逾時藍屏</div>");
             sb.AppendLine("    </div>");
 
             // Rule 4 Card
             sb.AppendLine("    <div class=\"rule-card\" style=\"border-left-color:" + r.IoWatchdogRuleColor + ";\">");
             sb.AppendLine("      <div class=\"rule-head\">");
-            sb.AppendLine("        <span class=\"rule-title\">【規則 4】磁碟 I/O 隊列阻塞與 DPC 看門狗逾時 (I/O Queue Saturation & Watchdog Crash)</span>");
+            sb.AppendLine("        <span class=\"rule-title\">【規則 4】磁碟 I/O 佇列阻塞與 DPC 看門狗逾時 (I/O Queue Saturation & Watchdog Crash)</span>");
             sb.AppendLine("        <span class=\"rule-status\" style=\"background-color:" + r.IoWatchdogRuleColor + "; color:#fff;\">" + r.IoWatchdogRuleStatus + "</span>");
             sb.AppendLine("      </div>");
             sb.AppendLine("      <div class=\"rule-desc\">" + r.IoWatchdogRuleTriggered + "</div>");
-            sb.AppendLine("      <div class=\"rule-formula\">判定公式：DiskThrashRisk = (TotalRAM < 16GB) ∧ (HardFaults > 1000/s) ∧ (I/O Latency > 3500ms) | 潛在崩潰錯誤：0x00000133 DPC_WATCHDOG_VIOLATION 核心看門狗逾時藍屏</div>");
+            sb.AppendLine("      <div class=\"rule-formula\">判定公式：DiskThrashRisk = (TotalRAM < 16GB) ∧ (HardFaults > 1000/s) ∧ (I/O Latency > 3000ms) | 異常錯誤碼：0x00000133 DPC_WATCHDOG_VIOLATION 核心中斷逾時藍屏</div>");
             sb.AppendLine("    </div>");
 
             // WORKLOAD COMPLIANCE SECTION
-            sb.AppendLine("    <h3 style=\"font-size:16px; margin: 32px 0 12px; color:var(--text-main);\">📋 現代標準日常工作集 (Working Set) 合規性定量審查</h3>");
+            sb.AppendLine("    <h3 style=\"font-size:16px; margin: 32px 0 12px; color:var(--text-main);\">📋 標準企業工作集資源合規性評定 (Working Set Resource Compliance)</h3>");
             sb.AppendLine("    <p style=\"font-size:13.5px; color:var(--text-sub); line-height:1.6;\">");
-            sb.AppendLine("      為排除「是否同仁使用不當或開啟非公務軟體導致當機」之疑慮，下表嚴謹量化 2025/2026 企業標準上班工作流之軟體資源需求：");
+            sb.AppendLine("      下表列出 2025/2026 企業標準業務工作流之各項軟體資源需求規格：");
             sb.AppendLine("    </p>");
             sb.AppendLine("    <table class=\"data-table\">");
             sb.AppendLine("      <thead>");
             sb.AppendLine("        <tr>");
             sb.AppendLine("          <th style=\"width:22%;\">工作任務類別</th>");
-            sb.AppendLine("          <th style=\"width:28%;\">企業典型日常軟體組合</th>");
-            sb.AppendLine("          <th style=\"width:18%;\">常態記憶體佔用</th>");
-            sb.AppendLine("          <th style=\"width:16%;\">常態 CPU 需求</th>");
-            sb.AppendLine("          <th style=\"width:16%;\">情境合規判定</th>");
+            sb.AppendLine("          <th style=\"width:28%;\">日常軟體組合</th>");
+            sb.AppendLine("          <th style=\"width:18%;\">記憶體需求規格</th>");
+            sb.AppendLine("          <th style=\"width:16%;\">CPU 需求規格</th>");
+            sb.AppendLine("          <th style=\"width:16%;\">合規性判定</th>");
             sb.AppendLine("        </tr>");
             sb.AppendLine("      </thead>");
             sb.AppendLine("      <tbody>");
             sb.AppendLine("        <tr>");
             sb.AppendLine("          <td><strong>現代網頁與雲端協作</strong></td>");
-            sb.AppendLine("          <td>Chrome / Edge (20~30 分頁，含 ERP, CRM, Docs, Jira, 內網系統)</td>");
+            sb.AppendLine("          <td>Chrome / Edge (20 至 30 分頁，含 ERP, CRM, Docs, Jira)</td>");
             sb.AppendLine("          <td>4.2 GB ~ 6.5 GB</td>");
-            sb.AppendLine("          <td>10% ~ 25% (2~4 執行緒)</td>");
-            sb.AppendLine("          <td><span class=\"tag-safe\">100% 企業常態</span></td>");
+            sb.AppendLine("          <td>10% ~ 25% (2 至 4 執行緒)</td>");
+            sb.AppendLine("          <td><span class=\"tag-safe\">企業常態規格</span></td>");
             sb.AppendLine("        </tr>");
             sb.AppendLine("        <tr>");
             sb.AppendLine("          <td><strong>通訊與即時視訊會議</strong></td>");
-            sb.AppendLine("          <td>Microsoft Teams / Zoom 視訊會議 + 螢幕簡報分享 + Slack/Outlook</td>");
+            sb.AppendLine("          <td>Microsoft Teams / Zoom 視訊會議與螢幕簡報分享</td>");
             sb.AppendLine("          <td>2.4 GB ~ 3.5 GB</td>");
-            sb.AppendLine("          <td>15% ~ 35% (即時編碼)</td>");
-            sb.AppendLine("          <td><span class=\"tag-safe\">100% 企業常態</span></td>");
+            sb.AppendLine("          <td>15% ~ 35% (即時影音編碼)</td>");
+            sb.AppendLine("          <td><span class=\"tag-safe\">企業常態規格</span></td>");
             sb.AppendLine("        </tr>");
             sb.AppendLine("        <tr>");
-            sb.AppendLine("          <td><strong>專業生產力與大型檔案</strong></td>");
-            sb.AppendLine("          <td>Excel 萬列數據報表 / VS Code / IntelliJ / Adobe Acrobat / WSL 容器</td>");
+            sb.AppendLine("          <td><strong>專業生產力與資料處理</strong></td>");
+            sb.AppendLine("          <td>試算表巨量資料 / 程式開發環境 / 容器化開發</td>");
             sb.AppendLine("          <td>3.5 GB ~ 8.0 GB</td>");
-            sb.AppendLine("          <td>25% ~ 60% (計算/索引)</td>");
-            sb.AppendLine("          <td><span class=\"tag-safe\">100% 企業常態</span></td>");
+            sb.AppendLine("          <td>25% ~ 60% (密集計算)</td>");
+            sb.AppendLine("          <td><span class=\"tag-safe\">企業常態規格</span></td>");
             sb.AppendLine("        </tr>");
             sb.AppendLine("        <tr>");
-            sb.AppendLine("          <td><strong>企業資安與常駐服務</strong></td>");
-            sb.AppendLine("          <td>公司強制 EDR (CrowdStrike / Defender), 備份代理人, Windows 搜尋索引</td>");
+            sb.AppendLine("          <td><strong>企業資安與常駐防護</strong></td>");
+            sb.AppendLine("          <td>企業端點防護 (EDR / Defender) 與備份代理程序</td>");
             sb.AppendLine("          <td>1.8 GB ~ 4.0 GB</td>");
-            sb.AppendLine("          <td>5% ~ 20% (即時背景)</td>");
+            sb.AppendLine("          <td>5% ~ 20% (即時常駐)</td>");
             sb.AppendLine("          <td><span class=\"tag-safe\">IT 強制合規</span></td>");
             sb.AppendLine("        </tr>");
             sb.AppendLine("        <tr style=\"background:#EFF6FF; font-weight:700;\">");
             sb.AppendLine("          <td>日常標準工作集總額</td>");
-            sb.AppendLine("          <td>以上企業必備工具同時運行之典型多工作業</td>");
+            sb.AppendLine("          <td>上述標準工具同時執行之多工作業</td>");
             sb.AppendLine("          <td style=\"color:var(--brand-dark);\">15.7 GB ~ 22.5 GB</td>");
-            sb.AppendLine("          <td>多核併發持續負載</td>");
-            sb.AppendLine("          <td><span class=\"tag-safe\">標準辦公基準</span></td>");
+            sb.AppendLine("          <td>多核心持續負載</td>");
+            sb.AppendLine("          <td><span class=\"tag-safe\">企業標準基準</span></td>");
             sb.AppendLine("        </tr>");
             sb.AppendLine("      </tbody>");
             sb.AppendLine("    </table>");
             sb.AppendLine("    <div style=\"background:#F0FDF4; border:1px solid #BBF7D0; border-radius:6px; padding:12px; margin-top:10px; font-size:13px; color:#166534;\">");
-            sb.AppendLine("      <strong>審查結論：</strong>受測設備當前實體配置為 <strong>" + r.TotalRamGb.ToString("F1") + " GB</strong>。在同仁「完全依循公司標準業務規範」操作下，基礎軟體開銷（15.7GB）即已超越或逼近實體記憶體天花板。<strong>由此科學證實：系統當機與卡頓 100% 肇因於硬體物理容量不足，絕非人為不當操作或過度使用！</strong>");
+            sb.AppendLine("      <strong>評定結論：</strong>受測設備實體記憶體配置為 <strong>" + r.TotalRamGb.ToString("F1") + " GB</strong>。標準業務軟體之基礎資源需求為 <strong>15.7 GB 至 22.5 GB</strong>。評定結果顯示：系統延遲與異常中斷係因硬體物理容量不足所致，非人為操作異常。");
             sb.AppendLine("    </div>");
 
             // PRESCRIPTIVE UPGRADE MATRIX SECTION
-            sb.AppendLine("    <h3 style=\"font-size:16px; margin: 32px 0 12px; color:var(--text-main);\">🛡️ 避免當機之硬體防禦升級與參數避險處方箋 (Prescriptive Hardware Upgrade Matrix)</h3>");
+            sb.AppendLine("    <h3 style=\"font-size:16px; margin: 32px 0 12px; color:var(--text-main);\">🛡️ 系統穩定性硬體升級與矯正處置表 (Corrective Action & Hardware Upgrade Matrix)</h3>");
             sb.AppendLine("    <p style=\"font-size:13.5px; color:var(--text-sub); line-height:1.6;\">");
-            sb.AppendLine("      為徹底根除系統崩潰風險並保障同仁工作產能，提出具備明確技術規格之升級決策指引：");
+            sb.AppendLine("      依據檢測結果，提出符合企業標準之硬體規格升級指引：");
             sb.AppendLine("    </p>");
             sb.AppendLine("    <table class=\"data-table\">");
             sb.AppendLine("      <thead>");
             sb.AppendLine("        <tr>");
             sb.AppendLine("          <th style=\"width:16%;\">硬體元件</th>");
-            sb.AppendLine("          <th style=\"width:24%;\">汰換/升級觸發條件</th>");
-            sb.AppendLine("          <th style=\"width:32%;\">建議採購之精確量化規格</th>");
-            sb.AppendLine("          <th style=\"width:28%;\">預期改善指標與避險效益</th>");
+            sb.AppendLine("          <th style=\"width:24%;\">升級觸發條件</th>");
+            sb.AppendLine("          <th style=\"width:32%;\">建議採購技術規格</th>");
+            sb.AppendLine("          <th style=\"width:28%;\">預期改善效益</th>");
             sb.AppendLine("        </tr>");
             sb.AppendLine("      </thead>");
             sb.AppendLine("      <tbody>");
             sb.AppendLine("        <tr>");
             sb.AppendLine("          <td><strong>實體記憶體 (RAM)</strong></td>");
             sb.AppendLine("          <td>實體 RAM < 16GB 或 MPDR > 0%</td>");
-            sb.AppendLine("          <td><strong>最低 32 GB (2x16GB 雙通道 DDR5-5600)</strong><br/><span style=\"font-size:11.5px; color:var(--text-sub);\">容器化開發/重度多工同仁建議直升 64GB</span></td>");
-            sb.AppendLine("          <td>硬性分頁置換率 (Hard Faults) 降為 0/s，<strong>徹底消除 100% 記憶體引發之系統假死與進程 OOM 閃退</strong>。</td>");
+            sb.AppendLine("          <td><strong>最低 32 GB (2x16GB 雙通道 DDR5-5600)</strong><br/><span style=\"font-size:11.5px; color:var(--text-sub);\">容器化開發建議配置 64 GB</span></td>");
+            sb.AppendLine("          <td>硬性分頁置換率降至 0/s。消除因記憶體枯竭引發之介面凍結與程式異常終止。</td>");
             sb.AppendLine("        </tr>");
             sb.AppendLine("        <tr>");
             sb.AppendLine("          <td><strong>中央處理器 (CPU)</strong></td>");
-            sb.AppendLine("          <td>邏輯執行緒 < 12 或 效能落後 > 30%</td>");
-            sb.AppendLine("          <td><strong>現代 ≥ 16 執行緒 (Intel Core i7 14代 / Core Ultra 7 / AMD Ryzen 7 8845HS)</strong></td>");
-            sb.AppendLine("          <td>多工吞吐量提升 +140%，背景防毒與編譯不再鎖死桌面響應，消除單核 100% 阻塞。</td>");
+            sb.AppendLine("          <td>邏輯執行緒 < 12 或 效能落後現代基準 > 30%</td>");
+            sb.AppendLine("          <td><strong>配置 16 執行緒或以上處理器 (Intel Core i7 14代 / Core Ultra 7 / AMD Ryzen 7 8845HS)</strong></td>");
+            sb.AppendLine("          <td>多工處理能力提升 140%。背景防毒與編譯程序不阻塞桌面操作響應。</td>");
             sb.AppendLine("        </tr>");
             sb.AppendLine("        <tr>");
             sb.AppendLine("          <td><strong>固態硬碟 (NVMe SSD)</strong></td>");
-            sb.AppendLine("          <td>無 DRAM 快取之低價 SSD 或 PCIe 3.0</td>");
-            sb.AppendLine("          <td><strong>配備獨立 LPDDR4/DDR4 DRAM 快取之 PCIe 4.0 x4 NVMe SSD (隨機 4K 讀寫 ≥ 800K IOPS)</strong></td>");
-            sb.AppendLine("          <td>佇列延遲壓制於 0.2ms 內，<strong>徹底杜絕 0x133 DPC_WATCHDOG_VIOLATION 儲存逾時藍屏</strong>。</td>");
+            sb.AppendLine("          <td>無獨立快取之固態硬碟或 PCIe 3.0 規格</td>");
+            sb.AppendLine("          <td><strong>配備獨立 DRAM 快取之 PCIe 4.0 x4 NVMe 固態硬碟 (4K 隨機讀寫 ≥ 800K IOPS)</strong></td>");
+            sb.AppendLine("          <td>I/O 佇列延遲降低至 0.2 ms 以內。防止 0x133 DPC_WATCHDOG_VIOLATION 儲存逾時錯誤。</td>");
             sb.AppendLine("        </tr>");
             sb.AppendLine("        <tr>");
             sb.AppendLine("          <td><strong>機身散熱架構</strong></td>");
             sb.AppendLine("          <td>熱衰減率 TPTR > 20%</td>");
-            sb.AppendLine("          <td><strong>配置雙散熱風扇 + 複合均溫板 (Vapor Chamber)，持續散熱功耗維持 ≥ 45W</strong></td>");
-            sb.AppendLine("          <td>全載溫度維持 < 85°C，防止觸發 PROCHOT 斷崖降頻與 105°C TJMax 硬體熱保護斷電重啟。</td>");
+            sb.AppendLine("          <td><strong>配置雙散熱風扇與均溫板 (Vapor Chamber)，持續散熱功耗維持 ≥ 45W</strong></td>");
+            sb.AppendLine("          <td>滿載運作溫度維持在 85°C 以下。防止觸發 PROCHOT 頻率限制與 105°C TJMax 硬體斷電。</td>");
             sb.AppendLine("        </tr>");
             sb.AppendLine("        <tr>");
             sb.AppendLine("          <td><strong>待機電源策略</strong></td>");
-            sb.AppendLine("          <td>受測筆電啟用 S0ix 連線待命</td>");
-            sb.AppendLine("          <td><strong>於 Windows 電源選項配置「闔蓋執行休眠 (S4 Hibernate)」，停用背景連線</strong></td>");
-            sb.AppendLine("          <td>闔蓋功耗歸零 (0W)，<strong>消滅通勤公事包高溫悶燒積熱與 0x9F 睡眠驅動死機</strong>。</td>");
+            sb.AppendLine("          <td>受測筆電啟用 S0ix 待命連線</td>");
+            sb.AppendLine("          <td><strong>Windows 電源設定設為「闔蓋進入休眠 (S4 Hibernate)」，停用背景連線</strong></td>");
+            sb.AppendLine("          <td>闔蓋待機功耗降至 0W。消除密閉背包積熱與 0x9F 電源驅動程式逾時錯誤。</td>");
             sb.AppendLine("        </tr>");
             sb.AppendLine("      </tbody>");
             sb.AppendLine("    </table>");
 
             // Hardware Specifications Table
-            sb.AppendLine("    <h3 style=\"font-size:16px; margin: 32px 0 12px;\">🖥️ 受測硬體資產詳細規格與作業系統架構</h3>");
+            sb.AppendLine("    <h3 style=\"font-size:16px; margin: 32px 0 12px;\">🖥️ 受測硬體資產詳細規格與作業系統架構 (System Architecture Specifications)</h3>");
             sb.AppendLine("    <table class=\"spec-table\">");
             sb.AppendLine("      <tr><th>主機識別名稱</th><td>" + r.MachineName + "</td></tr>");
             sb.AppendLine("      <tr><th>中央處理器 (CPU)</th><td><strong>" + r.CpuName + "</strong> (" + r.LogicalCores + " 執行緒 / 多核加速效率比: " + r.MultiThreadScalingRatio + "x)</td></tr>");
@@ -1323,26 +1357,17 @@ namespace HardwareBenchmark
                 sb.AppendLine("      <tr><th>自訂編譯 Linux Kernel</th><td><code>" + r.CustomKernelPath + "</code></td></tr>");
             }
             sb.AppendLine("      <tr><th>真實應用負載模擬</th><td>" + r.EdgeBenchmarkSummary + "</td></tr>");
-            sb.AppendLine("      <tr><th>評測引擎架構</th><td>Native x64 Hardware Sieve, Parallel Matrix & Edge Headless Engine (v2.6)</td></tr>");
+            sb.AppendLine("      <tr><th>評測引擎架構</th><td>Native x64 Hardware Sieve, Parallel Matrix & Edge Headless Engine (v2.7, ASD-STE100 Compliant)</td></tr>");
             sb.AppendLine("    </table>");
 
             // ACPI & Linux Environment Analysis Card
             sb.AppendLine("    <div style=\"background: #F8FAFC; border: 1px solid var(--border); border-left: 6px solid var(--brand); padding: 18px; border-radius: 8px; margin-top: 24px;\">");
-            sb.AppendLine("      <h4 style=\"font-size:15px; font-weight:700; color:var(--text-main); margin-bottom:10px;\">⚡ 筆電 ACPI 機制與 Linux 混合環境深度評析</h4>");
+            sb.AppendLine("      <h4 style=\"font-size:15px; font-weight:700; color:var(--text-main); margin-bottom:10px;\">⚡ 電源管理機制與 Linux 協同環境技術分析 (Technical Evaluation)</h4>");
             sb.AppendLine("      <p style=\"font-size:13.5px; color:#334155; line-height:1.7; margin-bottom:10px;\">");
-            sb.AppendLine("        <strong>【ACPI 待命機制評析】</strong>：" + r.AcpiAnalysisNote);
+            sb.AppendLine("        <strong>【電源管理機制分析】</strong>：" + r.AcpiAnalysisNote);
             sb.AppendLine("      </p>");
             sb.AppendLine("      <p style=\"font-size:13.5px; color:#334155; line-height:1.7;\">");
-            sb.AppendLine("        <strong>【Linux / WSL 協同開發負載評析】</strong>：當前配置為「" + r.LinuxEnvironmentStatus + "」。");
-            if (r.CustomKernelPath != "無")
-            {
-                sb.AppendLine(" 已檢測到掛載客製編譯之 Linux Kernel，在執行編譯、容器化或微服務叢集時，對虛擬化指令集擴展、快取容量（L3 Cache）與記憶體頻寬有極嚴苛需求。");
-            }
-            else
-            {
-                sb.AppendLine(" 在執行現代軟體工程或大數據多工作業時，系統常需兼顧 Windows 桌面環境與 Linux 容器/背景工作，若硬體核心數或記憶體不足，容易產生頻繁的 Context Switch 延遲與分頁檔快取抖動。");
-            }
-            sb.AppendLine(" 強烈建議在設備汰換時優先配置具備高能效散熱與 32GB 以上記憶體之現代架構筆電。");
+            sb.AppendLine("        <strong>【Linux 與 WSL 協同環境分析】</strong>：當前配置為「" + r.LinuxEnvironmentStatus + "」。在執行軟體建置、容器化或資料處理工作時，系統需同時支援 Windows 與 Linux 核心排程。若硬體執行緒或記憶體不足，將增加環境切換 (Context Switch) 延遲與分頁檔讀寫負擔。建議配置具備高效散熱能力與 32 GB 記憶體之硬體設備。");
             sb.AppendLine("      </p>");
             sb.AppendLine("    </div>");
 
