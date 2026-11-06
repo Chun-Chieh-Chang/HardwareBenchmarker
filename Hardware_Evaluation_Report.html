@@ -71,7 +71,7 @@
     <div class="header-bar">
       <div class="title-area">
         <h1>企業硬體效能評估與投資效益分析報告</h1>
-        <p>報告編號：RPT-20261106-100443 | 評測日期：2026-11-06 10:04:28</p>
+        <p>報告編號：RPT-20261106-105116 | 評測日期：2026-11-06 10:50:55</p>
       </div>
       <button class="btn-print" onclick="window.print()">🖨️ 列印 / 另存為簽核 PDF</button>
     </div>
@@ -83,18 +83,18 @@
           <span class="badge" style="background-color:#10B981;">當機停頓風險: 常態受控 (LOW RISK)</span>
         </div>
       </div>
-      <p style="font-size:14px; color:#334155; line-height:1.7;">受測設備算力顯著落後現代標竿 (-30.2%)，且實體記憶體無法承載現代日常標準工作集 (赤字 2.1%)，已觸發確定性當機與假死停頓規則。估算每位員工每年因日常等待卡頓與異常死機累積損失高達 106.8 小時工時 (折合沉沒財務成本 $4,805 USD)，遠超過採購新設備之資本支出。強烈建議儘速排入硬體汰換核決。</p>
+      <p style="font-size:14px; color:#334155; line-height:1.7;">受測設備算力顯著落後現代標竿 (-31.4%)，且實體記憶體無法承載現代日常標準工作集 (赤字 2.1%)，已觸發確定性當機與假死停頓規則。估算每位員工每年因日常等待卡頓與異常死機累積損失高達 111.3 小時工時 (折合沉沒財務成本 $5,008 USD)，遠超過採購新設備之資本支出。強烈建議儘速排入硬體汰換核決。</p>
     </div>
     <div class="grid-4">
       <div class="kpi-card">
         <div class="kpi-label">相較主流標竿算力落差</div>
-        <div class="kpi-val" style="color:var(--danger);">-30.2%</div>
+        <div class="kpi-val" style="color:var(--danger);">-31.4%</div>
         <div class="kpi-sub">實體記憶體赤字 (MPDR): <strong>2.1%</strong></div>
       </div>
       <div class="kpi-card">
         <div class="kpi-label">每日工作卡頓與分頁置換</div>
-        <div class="kpi-val">25.6 <span style="font-size:14px; font-weight:500;">分鐘/日</span></div>
-        <div class="kpi-sub">年化卡頓工時: <strong>104.5 小時/年</strong></div>
+        <div class="kpi-val">26.7 <span style="font-size:14px; font-weight:500;">分鐘/日</span></div>
+        <div class="kpi-sub">年化卡頓工時: <strong>109 小時/年</strong></div>
       </div>
       <div class="kpi-card">
         <div class="kpi-label">年化當機中斷與故障工時</div>
@@ -103,18 +103,29 @@
       </div>
       <div class="kpi-card">
         <div class="kpi-label">年化綜合沉沒財務浪費</div>
-        <div class="kpi-val">$4,805 <span style="font-size:14px; font-weight:500;">USD</span></div>
-        <div class="kpi-sub">卡頓等待 $4,702 + 當機損失 $103</div>
+        <div class="kpi-val">$5,008 <span style="font-size:14px; font-weight:500;">USD</span></div>
+        <div class="kpi-sub">卡頓等待 $4,905 + 當機損失 $103</div>
       </div>
     </div>
     <h3 style="font-size:16px; margin: 24px 0 12px;">📊 核心運算效能對比基準 (Benchmark Performance)</h3>
     <div class="bar-container">
-      <div class="bar-label"><span>單核心響應運算 (Single-Core Mathematical Index)</span><span>當前: 10550.6 pts / 標竿: 14500 pts</span></div>
-      <div class="bar-track"><div class="bar-fill bar-current" style="width:72.8%;"></div></div>
+      <div class="bar-label"><span>單核心響應運算 (Single-Core Mathematical Index)</span><span>當前: 10544.9 pts / 標竿: 14500 pts</span></div>
+      <div class="bar-track"><div class="bar-fill bar-current" style="width:72.7%;"></div></div>
     </div>
     <div class="bar-container">
-      <div class="bar-label"><span>多核心滿載吞吐量 (Multi-Core Saturated Throughput)</span><span>當前: 285068.4 pts / 標竿: 420000 pts</span></div>
-      <div class="bar-track"><div class="bar-fill" style="width:67.9%; background-color:var(--brand);"></div></div>
+      <div class="bar-label"><span>多核心滿載吞吐量 (Multi-Core Saturated Throughput)</span><span>當前: 276312.2 pts / 標竿: 420000 pts</span></div>
+      <div class="bar-track"><div class="bar-fill" style="width:65.8%; background-color:var(--brand);"></div></div>
+    </div>
+    <div style="background:#F0F9FF; border:1px solid #BAE6FD; border-radius:8px; padding:14px; margin-top:16px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; flex-wrap:wrap; gap:8px;">
+        <span style="font-size:14px; font-weight:700; color:#0369A1;">🌐 真實應用軟體核心負載 (Microsoft Edge Chromium 引擎冷啟動與 DOM 渲染)</span>
+        <span class="tag-safe">真實應用軟體模擬</span>
+      </div>
+      <p style="font-size:13px; color:#0C4A6E; line-height:1.6;">
+        <strong>【測試機制】</strong>：非純抽象合成指令，本項目以受控無頭模式（Headless）調用 Windows 內建 Microsoft Edge 核心進程，實測同仁開啟瀏覽器與複雜 Web 系統時的瞬間卡頓反應。<br/>
+        <strong>【量測數值】</strong>：瀏覽器進程冷啟動延遲：<strong>6707 ms</strong> | 5,000 個 DOM 節點腳本生成與重繪：<strong>537 ms</strong><br/>
+        <strong>【業務意義】</strong>：已完成 Microsoft Edge 原生核心冷啟動 (6707 ms) 與 5,000 DOM 節點渲染 (537 ms)。直接反映日常操作 ERP、CRM、Jira 與 Google Docs 等大型雲端系統時的真實流暢度。
+      </p>
     </div>
     <h3 style="font-size:16px; margin: 28px 0 12px;">📈 滿載壓力遙測曲線 (Saturated Stress Telemetry)</h3>
     <div style="background:#FAFAFA; border:1px solid var(--border); border-radius:8px; padding:16px;">
@@ -129,8 +140,8 @@
         <text x="10" y="45" font-size="11" fill="#94A3B8">100%</text>
         <text x="10" y="105" font-size="11" fill="#94A3B8">50%</text>
         <text x="10" y="165" font-size="11" fill="#94A3B8">0%</text>
-        <polyline fill="none" stroke="#3B82F6" stroke-width="3" points="40.0,54.1 70.9,52.9 101.8,53.2 132.7,51.9 163.6,53.2 194.5,48.3 225.5,52.3 256.4,53.3 287.3,48.7 318.2,53.3 349.1,53.9 380.0,57.8 410.9,50.4 441.8,52.7 472.7,52.7 503.6,47.7 534.5,52.9 565.5,52.3 596.4,53.7 627.3,50.9 658.2,54.1 689.1,53.9 720.0,155.5 " />
-        <polyline fill="none" stroke="#10B981" stroke-width="3" points="40.0,126.8 70.9,126.8 101.8,126.8 132.7,126.8 163.6,126.8 194.5,126.8 225.5,126.8 256.4,126.8 287.3,126.8 318.2,126.8 349.1,126.8 380.0,126.8 410.9,126.8 441.8,126.8 472.7,126.8 503.6,126.8 534.5,126.8 565.5,126.8 596.4,126.8 627.3,126.8 658.2,126.8 689.1,126.8 720.0,126.8 " />
+        <polyline fill="none" stroke="#3B82F6" stroke-width="3" points="40.0,56.0 70.9,53.0 101.8,53.3 132.7,49.0 163.6,55.3 194.5,50.8 225.5,55.1 256.4,53.2 287.3,51.2 318.2,56.1 349.1,53.7 380.0,63.0 410.9,53.7 441.8,58.2 472.7,50.2 503.6,57.2 534.5,49.7 565.5,54.8 596.4,51.2 627.3,62.5 658.2,54.7 689.1,53.4 720.0,155.6 " />
+        <polyline fill="none" stroke="#10B981" stroke-width="3" points="40.0,121.2 70.9,121.2 101.8,121.2 132.7,121.2 163.6,121.2 194.5,121.2 225.5,121.2 256.4,121.2 287.3,121.2 318.2,121.2 349.1,121.2 380.0,121.2 410.9,121.2 441.8,121.2 472.7,121.2 503.6,121.2 534.5,121.2 565.5,121.2 596.4,121.2 627.3,119.8 658.2,119.8 689.1,121.2 720.0,119.8 " />
       </svg>
     </div>
     <h3 style="font-size:16px; margin: 32px 0 12px; color:var(--text-main);">🚨 系統異常當機、崩潰與停頓假死量化診斷 (Deterministic Crash & Freeze Trigger Matrix)</h3>
@@ -141,7 +152,7 @@
         <span class="rule-status" style="background-color:#F59E0B; color:#fff;">觸發 Rule 1.2 飽和臨界 (Warning)</span>
       </div>
       <div class="rule-desc">工作集常態維持於 88%~96% 飽和邊界。當開啟第 25 個分頁、大型 Excel 活頁簿或 Teams 螢幕共享時，瞬間峰值突破 100%，引發背景進程被作業系統 OOM 強制閃退終止 (Process Exit 0xC0000005) 或短暫無響應卡頓。</div>
-      <div class="rule-formula">判定公式：MPDR = max(0, (Workload_Normal [15.7GB] - TotalRAM [15.4GB]) / 15.7) × 100% ＝ <strong>2.1%</strong> | 當前提交總限額: 16.6 GB (記憶體負載: 38%) | 潛在崩潰錯誤：0xC0000005 (Access Violation OOM), DWM 介面假死</div>
+      <div class="rule-formula">判定公式：MPDR = max(0, (Workload_Normal [15.7GB] - TotalRAM [15.4GB]) / 15.7) × 100% ＝ <strong>2.1%</strong> | 當前提交總限額: 16.6 GB (記憶體負載: 42%) | 潛在崩潰錯誤：0xC0000005 (Access Violation OOM), DWM 介面假死</div>
     </div>
     <div class="rule-card" style="border-left-color:#10B981;">
       <div class="rule-head">
@@ -149,7 +160,7 @@
         <span class="rule-status" style="background-color:#10B981; color:#fff;">未觸發 Rule 2 (Normal)</span>
       </div>
       <div class="rule-desc">散熱管線與功耗控制穩定，滿載運算下多核心能效表現良好。</div>
-      <div class="rule-formula">判定公式：TPTR = max(0, (ExpectedScaling [10.2x] - ActualScaling [27.02x]) / 10.2) × 100% ＝ <strong>0%</strong> | 散熱衰減觸發：PROCHOT 斷崖降頻 (時脈驟降 >60%) / TJMax 105°C 硬體斷電重啟 (Kernel-Power 41)</div>
+      <div class="rule-formula">判定公式：TPTR = max(0, (ExpectedScaling [10.2x] - ActualScaling [26.2x]) / 10.2) × 100% ＝ <strong>0%</strong> | 散熱衰減觸發：PROCHOT 斷崖降頻 (時脈驟降 >60%) / TJMax 105°C 硬體斷電重啟 (Kernel-Power 41)</div>
     </div>
     <div class="rule-card" style="border-left-color:#10B981;">
       <div class="rule-head">
@@ -271,13 +282,14 @@
     <h3 style="font-size:16px; margin: 32px 0 12px;">🖥️ 受測硬體資產詳細規格與作業系統架構</h3>
     <table class="spec-table">
       <tr><th>主機識別名稱</th><td>DESKTOP-C79G9PN</td></tr>
-      <tr><th>中央處理器 (CPU)</th><td><strong>AMD Ryzen 5 5500GT with Radeon Graphics</strong> (12 執行緒 / 多核加速效率比: 27.02x)</td></tr>
-      <tr><th>實體記憶體配置</th><td>15.4 GB (可用餘額: 9.4 GB / 提交總量: 16.6 GB) - <span style='color:var(--danger); font-weight:600;'>[容量赤字警示] 低於現代專業工作負載建議之 16GB 低標</span></td></tr>
+      <tr><th>中央處理器 (CPU)</th><td><strong>AMD Ryzen 5 5500GT with Radeon Graphics</strong> (12 執行緒 / 多核加速效率比: 26.2x)</td></tr>
+      <tr><th>實體記憶體配置</th><td>15.4 GB (可用餘額: 8.8 GB / 提交總量: 16.6 GB) - <span style='color:var(--danger); font-weight:600;'>[容量赤字警示] 低於現代專業工作負載建議之 16GB 低標</span></td></tr>
       <tr><th>硬體裝置型態</th><td><strong>桌上型電腦 / 直立式工作站 (Desktop / Tower Workstation)</strong></td></tr>
       <tr><th>作業系統環境</th><td><strong>Windows 11 專業版 (Pro) (26H2, 組建 26300.9818, 64 位元)</strong></td></tr>
       <tr><th>ACPI 電源與睡眠機制</th><td>Modern Standby (ACPI S0ix 低電源閒置 / AoAc 即時連線喚醒)</td></tr>
       <tr><th>Linux / WSL 協同環境</th><td>純原生 Windows 11 工作環境 (未部署本機 Linux 虛擬化或雙系統)</td></tr>
-      <tr><th>評測引擎架構</th><td>Native x64 Hardware Sieve & Parallel Matrix Vector Engine (Build 2.5)</td></tr>
+      <tr><th>真實應用負載模擬</th><td>已完成 Microsoft Edge 原生核心冷啟動 (6707 ms) 與 5,000 DOM 節點渲染 (537 ms)</td></tr>
+      <tr><th>評測引擎架構</th><td>Native x64 Hardware Sieve, Parallel Matrix & Edge Headless Engine (v2.6)</td></tr>
     </table>
     <div style="background: #F8FAFC; border: 1px solid var(--border); border-left: 6px solid var(--brand); padding: 18px; border-radius: 8px; margin-top: 24px;">
       <h4 style="font-size:15px; font-weight:700; color:var(--text-main); margin-bottom:10px;">⚡ 筆電 ACPI 機制與 Linux 混合環境深度評析</h4>

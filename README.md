@@ -1,4 +1,4 @@
-# 企業級硬體效能評估與投資效益分析系統 (Hardware Evaluator Pro v2.5)
+# 企業級硬體效能評估與投資效益分析系統 (Hardware Evaluator Pro v2.6)
 
 [![Platform](https://img.shields.io/badge/Platform-Windows%2010%20%2F%2011%20(x64)-blue.svg?style=flat-square)](https://github.com/Chun-Chieh-Chang/HardwareBenchmarker)
 [![Architecture](https://img.shields.io/badge/Architecture-Native%20.NET%20Framework-green.svg?style=flat-square)](https://github.com/Chun-Chieh-Chang/HardwareBenchmarker)
@@ -41,7 +41,12 @@
 | **Rule 3** | **Modern Standby 睡眠死機**<br/>(S0ix Thermal Sleep Crash) | **密閉空間熱阻係數**：$\ge 3.5\text{ K/W}$<br/>**連線待命背景功耗**：$3.0\text{W} \sim 6.0\text{W}$ | 筆電 S0ix 闔蓋置入公事包通勤，密閉高溫悶燒；睡眠狀態轉換超時引發藍屏死機（`0x0000009F DRIVER_POWER_STATE_FAILURE`）。 |
 | **Rule 4** | **磁碟佇列與 DPC 看門狗藍屏**<br/>(I/O Queue Saturation & Watchdog) | **SSD 佇列深度**：$> 32$<br/>**單次 I/O 延遲**：$> 3,500\text{ms}$ | 實體 RAM 不足迫使頻繁衝刷分頁檔，無 DRAM 快取之 SSD 延遲飆升，觸發核心看門狗藍屏（`0x00000133 DPC_WATCHDOG_VIOLATION`）。 |
 
-### 4. 現代標準日常工作集 (Working Set) 合規性定量審查
+### 4. 真實應用軟體核心負載模擬 (Microsoft Edge Headless Engine)
+- 在**完全不彈出視窗、不搶奪滑鼠、零資安防毒誤判**的前提下，受控調用 Windows 原生 Microsoft Edge 核心進程。
+- 背景動態生成包含 5,000 個 DOM 節點增刪、數值計算與樣式重繪之真實 Web 負載。
+- 精準測量瀏覽器進程冷啟動延遲（ms）與 DOM 腳本解析耗時，真實反映同仁操作 ERP, CRM, Jira, Google Docs 等大型雲端系統時的真實流暢度。
+
+### 5. 現代標準日常工作集 (Working Set) 合規性定量審查
 報告內建 2025/2026 企業標準上班工作流之資源開銷清冊：
 - **網頁與雲端協作**：Chrome / Edge (20~30 分頁，含 ERP, CRM, Docs, Jira) $\rightarrow$ **4.2 ~ 6.5 GB**
 - **通訊與視訊會議**：Teams / Zoom 視訊 + 螢幕簡報分享 + Slack/Outlook $\rightarrow$ **2.4 ~ 3.5 GB**
