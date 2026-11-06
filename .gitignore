@@ -1,0 +1,6 @@
+# Visual Studio and Windows temporary files
+*.tmp
+*.log
+.vs/
+bin/
+obj/

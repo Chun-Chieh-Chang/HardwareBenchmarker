@@ -1,0 +1,71 @@
+name: Build, Validate & Deploy Report
+
+on:
+  push:
+    branches: [ "main", "master" ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build-and-validate:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Compile Executable via Windows Native .NET C# Compiler
+        shell: cmd
+        run: |
+          C:\Windows\Microsoft.NET\Framework64\v4.0.30319\csc.exe /optimize /target:exe /out:HardwareBenchmarker_Portable.exe HardwareBenchmarker.cs
+          if %ERRORLEVEL% NEQ 0 exit /b %ERRORLEVEL%
+          if not exist dist mkdir dist
+          copy /y HardwareBenchmarker_Portable.exe dist\HardwareBenchmarker_Portable.exe
+
+      - name: Run Automated Benchmark & Generate Report
+        shell: cmd
+        run: |
+          HardwareBenchmarker_Portable.exe
+          if not exist Hardware_Evaluation_Report.html (
+            echo [Error] Hardware_Evaluation_Report.html was not generated!
+            exit /b 1
+          )
+
+      - name: Prepare GitHub Pages Payload
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path public
+          Copy-Item -Path Hardware_Evaluation_Report.html -Destination public/index.html -Force
+          Copy-Item -Path dist/HardwareBenchmarker_Portable.exe -Destination public/HardwareBenchmarker_Portable.exe -Force
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: HardwareBenchmarker-Package
+          path: |
+            dist/HardwareBenchmarker_Portable.exe
+            Hardware_Evaluation_Report.html
+
+      - name: Upload Pages Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+
+  deploy-pages:
+    needs: build-and-validate
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        continue-on-error: true
+        uses: actions/deploy-pages@v4
